@@ -1,5 +1,7 @@
 package org.da1.labormanagementbackend.services;
 
+import org.apache.catalina.User;
+import org.da1.labormanagementbackend.enums.ProfileTypes;
 import org.da1.labormanagementbackend.exceptions.UserAlreadyPresentException;
 import org.da1.labormanagementbackend.exceptions.UserNotFoundException;
 import org.da1.labormanagementbackend.models.Profile;
@@ -31,9 +33,15 @@ public class AuthService implements IAuthService {
         return user.get();
     }
 
+
+
     @Override
-    public UserInfo signUp(String username, String password, String firstName,
-                       String lastName, String email) throws UserAlreadyPresentException {
+    public UserInfo signUpIndividual(String username,
+                                 String password,
+                                 String name,
+                                 String email,
+                                 String profileType,
+                                     String phoneNo) throws UserAlreadyPresentException {
         Optional<UserInfo> userOptional=userRepository.findByEmailOrUsername(email,username);
 
         if(userOptional.isPresent()){
@@ -43,15 +51,39 @@ public class AuthService implements IAuthService {
         UserInfo user=new UserInfo();
         user.setUsername(username);
         user.setPassword(bCryptPasswordEncoder.encode(password));
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
+        user.setName(name);
         user.setEmail(email);
+        ProfileTypes profileTypes=ProfileTypes.valueOf(profileType);
+        user.setProfileType(profileTypes);
+        user.setPhoneNumber(phoneNo);
 
-        Profile profile=new Profile();
-        profile.setFirstName(firstName);
-        profile.setLastName(lastName);
+        return userRepository.save(user);
 
+    }
+    @Override
+    public UserInfo signUpEmployer(String username,
+                           String password,
+                           String name,
+                           String email,
+                           String profile,
+                           String companyName,
+                           String phoneNumber
+                           ) throws UserAlreadyPresentException {
+        Optional<UserInfo> userOptional=userRepository.findByEmailOrUsername(email,username);
 
+        if(userOptional.isPresent()){
+            throw new UserAlreadyPresentException("Please use any other email to sign");
+        }
+
+        UserInfo user=new UserInfo();
+        user.setUsername(username);
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        user.setName(name);
+        user.setEmail(email);
+        ProfileTypes profileTypes=ProfileTypes.valueOf(profile);
+        user.setProfileType(profileTypes);
+        user.setCompanyName(companyName);
+        user.setPhoneNumber(phoneNumber);
 
         return userRepository.save(user);
     }

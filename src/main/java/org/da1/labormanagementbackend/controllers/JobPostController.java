@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("post")
+@RequestMapping("/api/v1/post")
 public class JobPostController {
     @Autowired
     private JobPostService jobPostService;
@@ -25,7 +25,7 @@ public class JobPostController {
         List<JobPosting> jobPostingList=this.jobPostService.getAllJobPosting();
         if(jobPostingList.size()>0){
             for(JobPosting jobPosting:jobPostingList){
-                JobPostDTO jobPostDTO=new JobPostDTO();
+                JobPostDTO jobPostDTO;
                 jobPostDTO=convertJOBPostingtoDTO(jobPosting);
                 jobPostDTOList.add(jobPostDTO);
             }
@@ -37,11 +37,12 @@ public class JobPostController {
     @PostMapping
     public ResponseEntity<JobPostDTO> createJobPost(@RequestBody JobPostDTO jobPostDTO) {
 
-        if(this.jobPostService.doesJobPostExist(jobPostDTO.getId())==1){
+        if(jobPostDTO.getId()!=null && this.jobPostService.doesJobPostExist(jobPostDTO.getId())==1){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        JobPosting jobPosting= this.jobPostService.save(jobPostDTO.getEmployerId(),
+        JobPosting jobPosting= this.jobPostService.save(
+                jobPostDTO.getEmployerId(),
                 jobPostDTO.getTitle(),
                 jobPostDTO.getDescription(),
                 jobPostDTO.getLocation(),

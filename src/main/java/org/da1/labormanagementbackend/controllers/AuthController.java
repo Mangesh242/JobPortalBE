@@ -10,13 +10,11 @@ import org.da1.labormanagementbackend.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/")
+@CrossOrigin
 public class AuthController {
 
     @Autowired
@@ -37,14 +35,35 @@ public class AuthController {
     }
 
 
-    @PostMapping("signup")
-    public ResponseEntity<UserDTO> signup(@RequestBody signupRequestDTO signUpRequestDTO) {
+    @PostMapping("signupInd")
+    public ResponseEntity<UserDTO> signupInd(@RequestBody signupRequestDTO signUpRequestDTO) {
         try {
-            UserInfo user = authService.signUp(signUpRequestDTO.getUsername(),
+            UserInfo user = authService.signUpIndividual(signUpRequestDTO.getUsername(),
                     signUpRequestDTO.getPassword(),
-                    signUpRequestDTO.getFirstName(),
-                    signUpRequestDTO.getLastName(),
-                    signUpRequestDTO.getEmail());
+                    signUpRequestDTO.getName(),
+                    signUpRequestDTO.getEmail(),
+                    signUpRequestDTO.getProfile(),
+                    signUpRequestDTO.getPhoneNumber()
+            );
+            return new ResponseEntity<>(from(user), HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @PostMapping("signupEmp")
+    public ResponseEntity<UserDTO> signupEmp(@RequestBody signupRequestDTO signUpRequestDTO) {
+        try {
+            UserInfo user = authService.signUpEmployer(signUpRequestDTO.getUsername(),
+                    signUpRequestDTO.getPassword(),
+                    signUpRequestDTO.getName(),
+                    signUpRequestDTO.getEmail(),
+                    signUpRequestDTO.getProfile(),
+                    signUpRequestDTO.getCompanyName(),
+                    signUpRequestDTO.getPhoneNumber()
+            );
             return new ResponseEntity<>(from(user), HttpStatus.OK);
         }
         catch (Exception e) {
@@ -71,10 +90,14 @@ public class AuthController {
 
     private UserDTO from(UserInfo user){
         UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setEmail(user.getEmail());
-        userDTO.setFirstName(user.getFirstName());
-        userDTO.setLastName(user.getLastName());
+        System.out.println(user.getProfileType());
+        userDTO.setProfileType(user.getProfileType());
+
+
+
         return userDTO;
     }
 }

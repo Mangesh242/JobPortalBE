@@ -14,6 +14,6 @@ public class Message extends BaseModel {
 
 }
 
-//Port : localhost:5000/index.html
+//Port : localhost:5000
 
 //localhost:8080/hello

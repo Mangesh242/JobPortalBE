@@ -11,16 +11,10 @@ import lombok.Setter;
 @Setter
 public class Profile extends BaseModel {
 
-
-    private int userId;
     private String firstName;
     private String lastName;
     private String contactNumber;
     private String address;
-    private String resume; // For employee
-    private String companyName; // For employer
-    private String companyWebsite; // For employer
-    private String companyLogo; // For employer
 
 }
 
